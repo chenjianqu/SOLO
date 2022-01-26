@@ -410,6 +410,8 @@ class SOLOv2Head(nn.Module):
         cate_labels = inds[:, 1]
         kernel_preds = kernel_preds[inds[:, 0]]
 
+        print("predict raw:",cate_labels.shape)
+
         # trans vector.
         size_trans = cate_labels.new_tensor(self.seg_num_grids).pow(2).cumsum(0)
         strides = kernel_preds.new_ones(size_trans[-1])
@@ -439,6 +441,8 @@ class SOLOv2Head(nn.Module):
         cate_scores = cate_scores[keep]
         cate_labels = cate_labels[keep]
 
+        print("stride filter:",cate_labels.shape)
+
         # maskness.
         seg_scores = (seg_preds * seg_masks.float()).sum((1, 2)) / sum_masks
         cate_scores *= seg_scores
@@ -464,6 +468,8 @@ class SOLOv2Head(nn.Module):
         seg_preds = seg_preds[keep, :, :]
         cate_scores = cate_scores[keep]
         cate_labels = cate_labels[keep]
+
+        print("after NMS:",cate_labels.shape)
 
         # sort and keep top_k
         sort_inds = torch.argsort(cate_scores, descending=True)
